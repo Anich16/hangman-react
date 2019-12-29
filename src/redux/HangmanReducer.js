@@ -1,6 +1,8 @@
 const CHANGE_TOPIC = 'CHANGE_TOPIC';
 const FIND_LETTER = 'FIND_LETTER';
 const CHANGE_KEYBOARD = 'CHANGE_KEYBOARD';
+const START_NEW_GAME = 'START_NEW_GAME';
+const CHECK_STATUS_GAME = 'CHECK_STATUS_GAME';
 
 const initialState = {
 	wordsTopics: {
@@ -30,18 +32,19 @@ const initialState = {
             {value: 'b', status: false}, {value: 'n', status: false},
             {value: 'm', status: false}]
 	],
-	statusGame: null
+	statusGame: 'game'
 };
 
 const HangmanReducer = (state = initialState, action) => {
 	switch (action.type) {
 		case CHANGE_TOPIC: {
-			let wordIndex = Math.floor(Math.random() * state.wordsTopics[action.value].length);
-			let newWord = state.wordsTopics[action.value][wordIndex].split('');
+			let topic = action.value ? action.value : state.topic;
+			let wordIndex = Math.floor(Math.random() * state.wordsTopics[topic].length);
+			let newWord = state.wordsTopics[topic][wordIndex].split('');
 			let newViewWord = newWord.map(el => {
 				return el = ''
 			});
-			return {...state, topic: action.value, word: newWord, viewWord: newViewWord}
+			return {...state, topic: topic, word: newWord, viewWord: newViewWord, retries: 5}
 		}
 		case FIND_LETTER: {
 			let status = state.word.find(el => el === action.value);
@@ -53,17 +56,39 @@ const HangmanReducer = (state = initialState, action) => {
 			}
 		}
 		case CHANGE_KEYBOARD: {
-            let newKeyboard = state.keyboardData.map(el => {
-                el.map(elem => {
-                    if(elem.value === action.value) {
-                        return elem.status = true;
-                    } else {
-                        return elem;
-                    }
+            let newKeyboard;
+			if (action.status) {
+				newKeyboard = state.keyboardData.map(el => {
+					el.map(elem => {
+						return elem.status = false;
+					});
+					return el;
+				})
+			} else {
+                newKeyboard = state.keyboardData.map(el => {
+                    el.map(elem => {
+                        if(elem.value === action.value) {
+                            return elem.status = true;
+                        } else {
+                            return elem;
+                        }
+                    });
+                    return el;
                 });
-                return el;
-            });
+			}
             return {...state, keyboardData: newKeyboard};
+		}
+		case START_NEW_GAME: {
+			return {...state, statusGame: 'game', retries: 5}
+        }
+		case CHECK_STATUS_GAME: {
+			if (!state.retries){
+				return {...state, statusGame: 'lose'}
+			} else if (state.viewWord.indexOf('') < 0) {
+				return {...state, statusGame: 'win'}
+			} else {
+				return {...state};
+			}
 		}
 		default:
 			return state;
@@ -74,7 +99,9 @@ export default HangmanReducer;
 
 export const changeTopicAC = (value) => ({type: CHANGE_TOPIC, value});
 export const findLetterAC = (value) => ({type: FIND_LETTER, value});
-export const changeKeyboardAC = (value) => ({type: CHANGE_KEYBOARD, value});
+export const changeKeyboardAC = (value, status) => ({type: CHANGE_KEYBOARD, value, status});
+export const startNewGameAC = () => ({type: START_NEW_GAME});
+export const checkStatusGameAC = () => ({type: CHECK_STATUS_GAME});
 
 
 let checkedViewWord = (viewWord, word, value) => {

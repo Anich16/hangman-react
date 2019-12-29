@@ -1,13 +1,14 @@
 import App from "./App";
 import {connect} from "react-redux";
-import {changeKeyboardAC, changeTopicAC, findLetterAC} from "./redux/HangmanReducer";
+import {changeKeyboardAC, changeTopicAC, checkStatusGameAC, findLetterAC, startNewGameAC} from "./redux/HangmanReducer";
 
 const mapStateToProps = (state) => {
 	return {
 		topic: state.topic,
 		retries: state.retries,
 		viewWord: state.viewWord,
-		keyboard: state.keyboardData
+		keyboard: state.keyboardData,
+		statusGame: state.statusGame
 	}
 };
 
@@ -19,8 +20,14 @@ const mapDispatchToProps = (dispatch) => {
 		findLetter: (value) => {
 			return dispatch(findLetterAC(value))
 		},
-		changeKeyboard: (value) => {
-			return dispatch(changeKeyboardAC(value))
+		changeKeyboard: (value, status) => {
+			return dispatch(changeKeyboardAC(value, status))
+		},
+		startNewGame: () => {
+			return dispatch(startNewGameAC())
+		},
+		checkStatusGame: () => {
+			return dispatch(checkStatusGameAC())
 		}
 	}
 };
