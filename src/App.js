@@ -7,6 +7,7 @@ function App(props) {
   };
 
   const findLetter = (value) => {
+    props.changeKeyboard(value);
     props.findLetter(value);
   };
 

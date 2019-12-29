@@ -1,6 +1,6 @@
 import App from "./App";
 import {connect} from "react-redux";
-import {changeTopicAC, findLetterAC} from "./redux/HangmanReducer";
+import {changeKeyboardAC, changeTopicAC, findLetterAC} from "./redux/HangmanReducer";
 
 const mapStateToProps = (state) => {
 	return {
@@ -18,6 +18,9 @@ const mapDispatchToProps = (dispatch) => {
 		},
 		findLetter: (value) => {
 			return dispatch(findLetterAC(value))
+		},
+		changeKeyboard: (value) => {
+			return dispatch(changeKeyboardAC(value))
 		}
 	}
 };

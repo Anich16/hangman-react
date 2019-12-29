@@ -1,5 +1,6 @@
 const CHANGE_TOPIC = 'CHANGE_TOPIC';
 const FIND_LETTER = 'FIND_LETTER';
+const CHANGE_KEYBOARD = 'CHANGE_KEYBOARD';
 
 const initialState = {
 	wordsTopics: {
@@ -28,7 +29,8 @@ const initialState = {
             {value: 'c', status: false}, {value: 'v', status: false},
             {value: 'b', status: false}, {value: 'n', status: false},
             {value: 'm', status: false}]
-	]
+	],
+	statusGame: null
 };
 
 const HangmanReducer = (state = initialState, action) => {
@@ -44,17 +46,24 @@ const HangmanReducer = (state = initialState, action) => {
 		case FIND_LETTER: {
 			let status = state.word.find(el => el === action.value);
 			if (status) {
-				let newViewWord = state.word.map(el => {
-					if (el === action.value) {
-						return el;
-					} else {
-						return ''
-					}
-				});
+				let newViewWord = checkedViewWord([...state.viewWord], state.word, action.value);
 				return {...state, viewWord: newViewWord}
 			} else {
 				return {...state, retries: state.retries - 1}
 			}
+		}
+		case CHANGE_KEYBOARD: {
+            let newKeyboard = state.keyboardData.map(el => {
+                el.map(elem => {
+                    if(elem.value === action.value) {
+                        return elem.status = true;
+                    } else {
+                        return elem;
+                    }
+                });
+                return el;
+            });
+            return {...state, keyboardData: newKeyboard};
 		}
 		default:
 			return state;
@@ -65,4 +74,14 @@ export default HangmanReducer;
 
 export const changeTopicAC = (value) => ({type: CHANGE_TOPIC, value});
 export const findLetterAC = (value) => ({type: FIND_LETTER, value});
+export const changeKeyboardAC = (value) => ({type: CHANGE_KEYBOARD, value});
 
+
+let checkedViewWord = (viewWord, word, value) => {
+	let index = word.indexOf(value);
+	while(index !== -1) {
+		viewWord[index] = value;
+		index = word.indexOf(value, index + 1)
+	}
+	return viewWord;
+};
