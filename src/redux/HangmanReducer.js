@@ -83,7 +83,7 @@ const HangmanReducer = (state = initialState, action) => {
         }
 		case CHECK_STATUS_GAME: {
 			if (!state.retries){
-				return {...state, statusGame: 'lose'}
+				return {...state, statusGame: 'lose', viewWord: state.word}
 			} else if (state.viewWord.indexOf('') < 0) {
 				return {...state, statusGame: 'win'}
 			} else {

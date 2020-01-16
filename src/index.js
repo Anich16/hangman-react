@@ -4,6 +4,7 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 import {createStore} from "redux";
 import HangmanReducer from "./redux/HangmanReducer";
+import {Provider} from "react-redux";
 import AppContainer from "./AppContainer";
 
 const store = createStore(HangmanReducer);
@@ -14,7 +15,10 @@ store.subscribe(() => {
 });
 
 const renderAll = () => {
-	ReactDOM.render(<AppContainer state={store.getState()} store={store}/>, document.getElementById('root'));
+	ReactDOM.render(
+		<Provider store={store}>
+			<AppContainer store={store}/>
+		</Provider>, document.getElementById('root'));
 };
 
 renderAll();
